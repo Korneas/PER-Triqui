@@ -1,3 +1,4 @@
+
 package triquiRedes;
 
 import java.util.Observable;
@@ -10,6 +11,9 @@ public class Logica implements Observer{
 	
 	private Comunicacion c;
 	
+	private int x, y;
+	private int [][] matriz;
+	
 	private int[][] jugadaOponente;
 	private int xO,yO;
 	
@@ -19,10 +23,44 @@ public class Logica implements Observer{
 		this.app = app;
 		
 		c= new Comunicacion();
+		
+		matriz = new int[3][3];
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				matriz[i][j]=0;
+			}
+		}
 	}
 
 	public void pintar() {
-
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				
+				// CUADR�CULA
+				app.noFill();
+				app.stroke(255);
+				app.strokeWeight(5);
+				app.rect((i*200)+(50), (j*200)+(50), 200, 200);
+				app.noStroke();
+				
+				// INTERACCI�N
+				x = (150)+(i*200);
+				y = (150)+(j*200);
+				
+				if (matriz[i][j]==1) {
+					app.stroke(150,0,200);
+					app.strokeWeight(10);
+					app.ellipse(x, y, 100, 100);
+					app.noStroke();
+				}
+				
+				if (matriz[i][j]== 2) {
+					app.fill(0,255,255);
+					app.ellipse(x, y, 100, 100);
+					app.noFill();
+				}
+			}
+		}
 	}
 	
 	@Override
@@ -42,7 +80,16 @@ public class Logica implements Observer{
 	
 
 	public void click() {
-
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				x = (150)+(i*200);
+				y = (150)+(j*200);
+				
+				if (app.dist(x, y, app.mouseX, app.mouseY)<150) {
+					matriz[i][j] = 1;
+				}
+			}
+		}
 	}
 
 	public void release() {
