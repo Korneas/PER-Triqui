@@ -1,26 +1,56 @@
 package triquiRedes;
 
+import java.util.Observable;
+import java.util.Observer;
+
 import processing.core.PApplet;
 
-public class Logica {
+public class Logica implements Observer{
 	private PApplet app;
+	
+	private Comunicacion c;
+	
+	private int[][] jugadaOponente;
+	private int xO,yO;
+	
+	private boolean jugar;
 
 	public Logica(PApplet app) {
 		this.app = app;
+		
+		c= new Comunicacion();
 	}
 
 	public void pintar() {
 
 	}
+	
+	@Override
+	public void update(Observable o, Object arg) {
+		if(arg instanceof String){
+			String pos = (String) arg;
+			
+			String[] posiciones = pos.split(":");
+			xO = Integer.parseInt(posiciones[0]);
+			yO = Integer.parseInt(posiciones[1]);
+			
+			//matriz[xO][yO]==2;
+			jugar=true;
+		}
+		
+	}
+	
 
 	public void click() {
 
 	}
 
 	public void release() {
-
+		jugar=false;
+		
+//		MensajeID jugada = new MensajeID()
 	}
-
+	
 	private void codigoProDeTiempo() {
 		// public class Cronometro {
 		// //Objeto para contabilizar tiempo y que no se vea afectado por un
@@ -58,5 +88,7 @@ public class Logica {
 		// }
 		// }
 	}
+
+	
 
 }

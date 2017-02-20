@@ -48,6 +48,14 @@ public class Comunicacion extends Observable implements Runnable {
 						if (idLimite >= id) {
 							id = idLimite + 1;
 						}
+
+						if (id >= 3) {
+							id = 0;
+							InetAddress host = InetAddress.getByName(GROUP_ADDRESS);
+							mSocket.leaveGroup(host);
+							mSocket.close();
+							System.out.println("Numero de jugadores completados");
+						}
 					}
 				}
 			}
@@ -113,13 +121,24 @@ public class Comunicacion extends Observable implements Runnable {
 				try {
 					DatagramPacket dPacket = recibir();
 					if (dPacket != null) {
-						MensajeID msg = (MensajeID) deserialize(dPacket.getData());
-						String contenido = msg.getContenido();
+						if (deserialize(dPacket.getData()) instanceof MensajeID) {
+							MensajeID msg = (MensajeID) deserialize(dPacket.getData());
+							String contenido = msg.getContenido();
 
-						if (contenido.contains("soy nuevo")) {
-							// Responder
-							byte[] data = serialize(new MensajeID("soy:" + id));
-							enviar(data, GROUP_ADDRESS, PORT);
+							if (contenido.contains("soy nuevo")) {
+								// Responder
+								byte[] data = serialize(new MensajeID("soy:" + id));
+								enviar(data, GROUP_ADDRESS, PORT);
+							}
+							
+							if (contenido.contains("posicion;")){
+								String[] datos = contenido.split(";");
+								String pos = datos[1];
+								
+								setChanged();
+								notifyObservers(pos);
+								clearChanged();
+							}
 						}
 					}
 				} catch (IOException e) {
