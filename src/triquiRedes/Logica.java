@@ -13,6 +13,14 @@ public class Logica {
 
 	}
 
+	public void click() {
+
+	}
+
+	public void release() {
+
+	}
+
 	private void codigoProDeTiempo() {
 		// public class Cronometro {
 		// //Objeto para contabilizar tiempo y que no se vea afectado por un

@@ -7,13 +7,13 @@ public class Main extends PApplet{
 	private Logica log;
 	
 	public static void main(String[] args) {
-		//System.setProperty("java.net.preferIPv4Stack", "true");
-		PApplet.main("intentoAutoID.Main");
+		System.setProperty("java.net.preferIPv4Stack", "true");
+		PApplet.main("triquiRedes.Main");
 	}
 	
 	@Override
 	public void settings(){
-		size(200,200);
+		size(700,700);
 	}
 	
 	@Override
@@ -25,6 +25,16 @@ public class Main extends PApplet{
 	public void draw(){
 		background(0);
 		log.pintar();
+	}
+	
+	@Override
+	public void mousePressed(){
+		log.click();
+	}
+	
+	@Override
+	public void mouseReleased(){
+		log.release();
 	}
 
 }
