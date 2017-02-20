@@ -6,28 +6,40 @@ import java.util.Observer;
 
 import processing.core.PApplet;
 
-public class Logica implements Observer{
+public class Logica implements Observer {
 	private PApplet app;
-	
+
 	private Comunicacion c;
-	
+	private int id, idOponente;
+
 	private int x, y;
-	private int [][] matriz;
-	
+	private int[][] matriz;
+	private int xJ, yJ;
+
 	private int[][] jugadaOponente;
-	private int xO,yO;
-	
+	private int xO, yO;
+
 	private boolean jugar;
 
 	public Logica(PApplet app) {
 		this.app = app;
-		
-		c= new Comunicacion();
-		
+
+		c = new Comunicacion();
+		Thread th = new Thread(c);
+		th.start();
+
+		id = c.getId();
+
+		if (id == 1) {
+			idOponente = 2;
+		} else if (id == 2) {
+			idOponente = 1;
+		}
+
 		matriz = new int[3][3];
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
-				matriz[i][j]=0;
+				matriz[i][j] = 0;
 			}
 		}
 	}
@@ -35,69 +47,68 @@ public class Logica implements Observer{
 	public void pintar() {
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
-				
+
 				// CUADR�CULA
 				app.noFill();
 				app.stroke(255);
 				app.strokeWeight(5);
-				app.rect((i*200)+(50), (j*200)+(50), 200, 200);
+				app.rect((i * 200) + (50), (j * 200) + (50), 200, 200);
 				app.noStroke();
-				
+
 				// INTERACCI�N
-				x = (150)+(i*200);
-				y = (150)+(j*200);
-				
-				if (matriz[i][j]==1) {
-					app.stroke(150,0,200);
+				x = (150) + (i * 200);
+				y = (150) + (j * 200);
+
+				if (matriz[i][j] == 1) {
+					app.stroke(150, 0, 200);
 					app.strokeWeight(10);
 					app.ellipse(x, y, 100, 100);
 					app.noStroke();
 				}
-				
-				if (matriz[i][j]== 2) {
-					app.fill(0,255,255);
+
+				if (matriz[i][j] == 2) {
+					app.fill(0, 255, 255);
 					app.ellipse(x, y, 100, 100);
 					app.noFill();
 				}
 			}
 		}
 	}
-	
+
 	@Override
 	public void update(Observable o, Object arg) {
-		if(arg instanceof String){
+		if (arg instanceof String) {
 			String pos = (String) arg;
-			
+
 			String[] posiciones = pos.split(":");
 			xO = Integer.parseInt(posiciones[0]);
 			yO = Integer.parseInt(posiciones[1]);
-			
-			//matriz[xO][yO]==2;
-			jugar=true;
+
+			matriz[xO][yO] = idOponente;
+			jugar = true;
 		}
-		
+
 	}
-	
 
 	public void click() {
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
-				x = (150)+(i*200);
-				y = (150)+(j*200);
-				
-				if (app.dist(x, y, app.mouseX, app.mouseY)<150) {
-					matriz[i][j] = 1;
+				x = (150) + (i * 200);
+				y = (150) + (j * 200);
+
+				if (app.dist(x, y, app.mouseX, app.mouseY) < 150 && id != 0) {
+					matriz[i][j] = id;
 				}
 			}
 		}
 	}
 
 	public void release() {
-		jugar=false;
-		
-//		MensajeID jugada = new MensajeID()
+		jugar = false;
+
+		// MensajeID jugada = new MensajeID()
 	}
-	
+
 	private void codigoProDeTiempo() {
 		// public class Cronometro {
 		// //Objeto para contabilizar tiempo y que no se vea afectado por un
@@ -135,7 +146,5 @@ public class Logica implements Observer{
 		// }
 		// }
 	}
-
-	
 
 }
