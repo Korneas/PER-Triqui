@@ -119,25 +119,27 @@ public class Comunicacion extends Observable implements Runnable {
 		while (life) {
 			if (mSocket != null) {
 				try {
-					DatagramPacket dPacket = recibir();
-					if (dPacket != null) {
-						if (deserialize(dPacket.getData()) instanceof MensajeID) {
-							MensajeID msg = (MensajeID) deserialize(dPacket.getData());
-							String contenido = msg.getContenido();
+					if (!mSocket.isClosed()) {
+						DatagramPacket dPacket = recibir();
+						if (dPacket != null) {
+							if (deserialize(dPacket.getData()) instanceof MensajeID) {
+								MensajeID msg = (MensajeID) deserialize(dPacket.getData());
+								String contenido = msg.getContenido();
 
-							if (contenido.contains("soy nuevo")) {
-								// Responder
-								byte[] data = serialize(new MensajeID("soy:" + id));
-								enviar(data, GROUP_ADDRESS, PORT);
-							}
-							
-							if (contenido.contains("posicion;")){
-								String[] datos = contenido.split(";");
-								String pos = datos[1];
-								
-								setChanged();
-								notifyObservers(pos);
-								clearChanged();
+								if (contenido.contains("soy nuevo")) {
+									// Responder
+									byte[] data = serialize(new MensajeID("soy:" + id));
+									enviar(data, GROUP_ADDRESS, PORT);
+								}
+
+								if (contenido.contains("posicion;")) {
+									String[] datos = contenido.split(";");
+									String pos = datos[1];
+
+									setChanged();
+									notifyObservers(pos);
+									clearChanged();
+								}
 							}
 						}
 					}
@@ -151,5 +153,9 @@ public class Comunicacion extends Observable implements Runnable {
 
 	public int getId() {
 		return id;
+	}
+
+	public String getGroupAddress() {
+		return GROUP_ADDRESS;
 	}
 }
