@@ -121,6 +121,7 @@ public class Comunicacion extends Observable implements Runnable {
 				try {
 					DatagramPacket dPacket = recibir();
 					if (dPacket != null) {
+
 						if (deserialize(dPacket.getData()) instanceof MensajeID) {
 							MensajeID msg = (MensajeID) deserialize(dPacket.getData());
 							String contenido = msg.getContenido();
@@ -129,15 +130,22 @@ public class Comunicacion extends Observable implements Runnable {
 								// Responder
 								byte[] data = serialize(new MensajeID("soy:" + id));
 								enviar(data, GROUP_ADDRESS, PORT);
-							}
-							
-							if (contenido.contains("posicion;")){
+
+							} else
+
+							if (contenido.contains("posicion;")) {
 								String[] datos = contenido.split(";");
 								String pos = datos[1];
-								
-								setChanged();
-								notifyObservers(pos);
-								clearChanged();
+								int idEntrada = Integer.parseInt(datos[2]);
+								if (idEntrada != id) {
+									System.out.println(contenido + " y llega de: " + idEntrada + " y va para: " + id);
+
+									setChanged();
+									notifyObservers(pos);
+									clearChanged();
+
+								}
+
 							}
 						}
 					}
@@ -147,6 +155,16 @@ public class Comunicacion extends Observable implements Runnable {
 			}
 		}
 
+	}
+
+	public void mensajePos(MensajeID mensaje) {
+		byte[] data = serialize(mensaje);
+		try {
+			enviar(data, GROUP_ADDRESS, PORT);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public int getId() {

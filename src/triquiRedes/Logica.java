@@ -25,12 +25,14 @@ public class Logica implements Observer {
 		this.app = app;
 
 		c = new Comunicacion();
+		c.addObserver(this);
 		Thread th = new Thread(c);
 		th.start();
 
 		id = c.getId();
 
 		if (id == 1) {
+			jugar = true;
 			idOponente = 2;
 		} else if (id == 2) {
 			idOponente = 1;
@@ -73,6 +75,8 @@ public class Logica implements Observer {
 				}
 			}
 		}
+
+		ganar();
 	}
 
 	@Override
@@ -83,6 +87,7 @@ public class Logica implements Observer {
 			String[] posiciones = pos.split(":");
 			xO = Integer.parseInt(posiciones[0]);
 			yO = Integer.parseInt(posiciones[1]);
+			System.out.println("envia");
 
 			matriz[xO][yO] = idOponente;
 			jugar = true;
@@ -96,8 +101,12 @@ public class Logica implements Observer {
 				x = (150) + (i * 200);
 				y = (150) + (j * 200);
 
-				if (app.dist(x, y, app.mouseX, app.mouseY) < 150 && id != 0) {
-					matriz[i][j] = id;
+				if (app.dist(x, y, app.mouseX, app.mouseY) < 100 && id != 0 && jugar == true) {
+					if (matriz[i][j] == 0) {
+						matriz[i][j] = id;
+						MensajeID jugada = new MensajeID("posicion;" + i + ":" + j + ";" + c.getId());
+						c.mensajePos(jugada);
+					}
 				}
 			}
 		}
@@ -105,8 +114,50 @@ public class Logica implements Observer {
 
 	public void release() {
 		jugar = false;
+	}
 
-		// MensajeID jugada = new MensajeID()
+	public void ganar() {
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				if ((matriz[0][0] == id && matriz[0][1] == id && matriz[0][2] == id)
+						|| (matriz[1][0] == id && matriz[1][1] == id && matriz[1][2] == id)
+						|| (matriz[2][0] == id && matriz[2][1] == id && matriz[2][2] == id)
+						|| (matriz[0][0] == id && matriz[1][0] == id && matriz[2][0] == id)
+						|| (matriz[0][1] == id && matriz[1][1] == id && matriz[2][1] == id)
+						|| (matriz[0][2] == id && matriz[1][2] == id && matriz[2][2] == id)
+						|| (matriz[0][0] == id && matriz[1][1] == id && matriz[2][2] == id)
+						|| (matriz[0][2] == id && matriz[1][1] == id && matriz[2][0] == id)) {
+
+					app.rectMode(PApplet.CENTER);
+					app.fill(255);
+					app.rect(app.width / 2, app.height / 2, 500, 200);
+					app.textSize(50);
+					app.fill(255, 0, 255);
+					app.textAlign(PApplet.CENTER, PApplet.CENTER);
+					app.text("Ganador:", app.width / 2, (app.height / 2) - 20);
+					app.text("Jugador #: " + id, app.width / 2, (app.height / 2) + 20);
+					app.rectMode(PApplet.CORNER);
+				} else if ((matriz[0][0] == idOponente && matriz[0][1] == idOponente && matriz[0][2] == idOponente)
+						|| (matriz[1][0] == idOponente && matriz[1][1] == idOponente && matriz[1][2] == idOponente)
+						|| (matriz[2][0] == idOponente && matriz[2][1] == idOponente && matriz[2][2] == idOponente)
+						|| (matriz[0][0] == idOponente && matriz[1][0] == idOponente && matriz[2][0] == idOponente)
+						|| (matriz[0][1] == idOponente && matriz[1][1] == idOponente && matriz[2][1] == idOponente)
+						|| (matriz[0][2] == idOponente && matriz[1][2] == idOponente && matriz[2][2] == idOponente)
+						|| (matriz[0][0] == idOponente && matriz[1][1] == idOponente && matriz[2][2] == idOponente)
+						|| (matriz[0][2] == idOponente && matriz[1][1] == idOponente && matriz[2][0] == idOponente)) {
+					app.rectMode(PApplet.CENTER);
+					app.fill(255);
+					app.rect(app.width / 2, app.height / 2, 500, 200);
+					app.textSize(50);
+					app.fill(255, 0, 255);
+					app.textAlign(PApplet.CENTER, PApplet.CENTER);
+					app.text("Ganador:", app.width / 2, (app.height / 2) - 20);
+					app.text("Jugador #: " + idOponente, app.width / 2, (app.height / 2) + 20);
+					app.rectMode(PApplet.CORNER);
+				}
+			}
+		}
+
 	}
 
 	private void codigoProDeTiempo() {
