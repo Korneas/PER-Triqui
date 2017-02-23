@@ -132,12 +132,10 @@ public class Comunicacion extends Observable implements Runnable {
 									enviar(data, GROUP_ADDRESS, PORT);
 								}
 
-								if (contenido.contains("posicion;")) {
-									String[] datos = contenido.split(";");
-									String pos = datos[1];
+								if (contenido.contains("posicion;") || contenido.contains("Gano")) {
 
 									setChanged();
-									notifyObservers(pos);
+									notifyObservers(contenido);
 									clearChanged();
 								}
 							}
