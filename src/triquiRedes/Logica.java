@@ -76,7 +76,7 @@ public class Logica implements Observer {
 			}
 		}
 
-		ganar();
+		finalJuego();
 	}
 
 	@Override
@@ -116,7 +116,7 @@ public class Logica implements Observer {
 		jugar = false;
 	}
 
-	public void ganar() {
+	public void finalJuego() {
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
 				if ((matriz[0][0] == id && matriz[0][1] == id && matriz[0][2] == id)
@@ -153,6 +153,17 @@ public class Logica implements Observer {
 					app.textAlign(PApplet.CENTER, PApplet.CENTER);
 					app.text("Ganador:", app.width / 2, (app.height / 2) - 20);
 					app.text("Jugador #: " + idOponente, app.width / 2, (app.height / 2) + 20);
+					app.rectMode(PApplet.CORNER);
+				} else if (matriz[0][0] != 0 && matriz[0][1] != 0 && matriz[0][2] != 0 && matriz[1][0] != 0
+						&& matriz[1][1] != 0 && matriz[1][2] != 0 && matriz[2][0] != 0 && matriz[2][1] != 0
+						&& matriz[2][2] != 0) {
+					app.rectMode(PApplet.CENTER);
+					app.fill(255);
+					app.rect(app.width / 2, app.height / 2, 500, 200);
+					app.textSize(50);
+					app.fill(255, 0, 255);
+					app.textAlign(PApplet.CENTER, PApplet.CENTER);
+					app.text("Empate", app.width / 2, app.height / 2);
 					app.rectMode(PApplet.CORNER);
 				}
 			}

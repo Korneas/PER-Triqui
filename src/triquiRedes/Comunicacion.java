@@ -19,6 +19,7 @@ public class Comunicacion extends Observable implements Runnable {
 			mSocket = new MulticastSocket(PORT);
 			InetAddress host = InetAddress.getByName(GROUP_ADDRESS);
 			mSocket.joinGroup(host);
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
