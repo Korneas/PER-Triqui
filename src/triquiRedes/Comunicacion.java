@@ -48,14 +48,6 @@ public class Comunicacion extends Observable implements Runnable {
 						if (idLimite >= id) {
 							id = idLimite + 1;
 						}
-
-						if (id >= 3) {
-							id = 0;
-							InetAddress host = InetAddress.getByName(GROUP_ADDRESS);
-							mSocket.leaveGroup(host);
-							mSocket.close();
-							System.out.println("Numero de jugadores completados");
-						}
 					}
 				}
 			}

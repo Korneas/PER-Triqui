@@ -11,7 +11,7 @@ public class Logica implements Observer {
 	private PApplet app;
 
 	private Comunicacion c;
-	private int id, idOponente;
+	private int id, idOponente, idGanador;
 
 	private int x, y;
 	private int[][] matriz;
@@ -39,6 +39,9 @@ public class Logica implements Observer {
 			idOponente = 1;
 			jugar = false;
 			System.out.println("Voy de segundo");
+		} else if (id >= 3) {
+			jugar = false;
+			System.out.println("Soy espectador");
 		}
 
 		matriz = new int[3][3];
@@ -51,6 +54,7 @@ public class Logica implements Observer {
 		xJ = 4;
 		yJ = 4;
 
+		winner = false;
 	}
 
 	public void pintar() {
@@ -61,10 +65,14 @@ public class Logica implements Observer {
 		app.textAlign(PApplet.LEFT);
 		app.text("Soy jugador: " + id, 25, 20);
 		app.textAlign(PApplet.RIGHT);
-		if (jugar && !winner) {
-			app.text("Mi turno", 575, 20);
-		} else if (!jugar && !winner) {
-			app.text("Turno del oponente", 575, 20);
+		if (id <= 2) {
+			if (jugar && !winner) {
+				app.text("Mi turno", 575, 20);
+			} else if (!jugar && !winner) {
+				app.text("Turno del oponente", 575, 20);
+			}
+		} else if (id >= 3) {
+			app.text("Espectador", 575, 20);
 		}
 
 		for (int i = 0; i < 3; i++) {
@@ -137,28 +145,41 @@ public class Logica implements Observer {
 
 		app.textAlign(PApplet.CENTER);
 		app.textSize(20);
-		if (jugar && winner) {
-			if (idOponente == 1) {
-				app.fill(200,0,50);
-			} else if (idOponente == 2) {
-				app.fill(0,50,255);
+		if (id <= 2 && id >= 1) {
+			if (jugar && winner) {
+				if (idOponente == 1) {
+					app.fill(200, 0, 50);
+				} else if (idOponente == 2) {
+					app.fill(0, 50, 255);
+				}
+				app.rect(0, 200, app.width, 200);
+				app.fill(255);
+				app.text("Perdiste\nGano jugador: " + idOponente, 300, 300);
+			} else if (!jugar && winner) {
+				if (id == 1) {
+					app.fill(200, 0, 50);
+				} else if (id == 2) {
+					app.fill(0, 50, 255);
+				}
+				app.rect(0, 200, app.width, 200);
+				app.fill(255);
+				app.text("Ganaste\nPerdio jugador: " + idOponente, 300, 300);
+			}
+		}
+
+		if (id >= 3 && winner) {
+			if (idGanador == 1) {
+				app.fill(200, 0, 50);
+			} else if (idGanador == 2) {
+				app.fill(0, 50, 255);
 			}
 			app.rect(0, 200, app.width, 200);
 			app.fill(255);
-			app.text("Perdiste\nGano jugador: " + idOponente, 300, 300);
-		} else if (!jugar && winner) {
-			if (id == 1) {
-				app.fill(200,0,50);
-			} else if (id == 2) {
-				app.fill(0,50,255);
-			}
-			app.rect(0, 200, app.width, 200);
-			app.fill(255);
-			app.text("Ganaste\nPerdio jugador: " + idOponente, 300, 300);
+			app.text("Gano jugador: " + idGanador, 300, 300);
 		}
 		app.textSize(30);
 		if (empate) {
-			app.fill(0,200,0);
+			app.fill(0, 200, 0);
 			app.rect(0, 200, app.width, 200);
 			app.fill(255);
 			app.text("Empate", 300, 300);
@@ -189,21 +210,30 @@ public class Logica implements Observer {
 				yO = Integer.parseInt(posiciones[1]);
 				int idJugador = Integer.parseInt(posiciones[2]);
 
-				if (idJugador != id) {
-					matriz[xO][yO] = idOponente;
+				if (idJugador != id && id <= 2) {
 					jugar = true;
+					matriz[xO][yO] = idOponente;
+				}
+
+				if (id >= 3) {
+					matriz[xO][yO] = idJugador;
 				}
 			}
 
 			if (((String) arg).contains("Gano")) {
 				winner = true;
+
+				if (id >= 3) {
+					String[] win = ((String) arg).split(":");
+					idGanador = Integer.parseInt(win[1]);
+				}
 			}
 		}
 
 	}
 
 	public void click() {
-		System.out.println(jugar + ":" + check + ":" + xJ + ":" + yJ + ":" + id);
+		System.out.println(jugar + ":" + xJ + ":" + yJ + ":" + id);
 		if (!winner) {
 			if (jugar && !check && xJ == 4 && yJ == 4) {
 				for (int i = 0; i < 3; i++) {
@@ -244,7 +274,7 @@ public class Logica implements Observer {
 			}
 
 			if (winner) {
-				MensajeID jugada = new MensajeID("Gano el jugador: " + id);
+				MensajeID jugada = new MensajeID("Gano el jugador:" + id);
 				try {
 					c.enviar(c.serialize(jugada), c.getGroupAddress(), 5000);
 				} catch (IOException e) {
