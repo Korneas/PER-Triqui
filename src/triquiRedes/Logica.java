@@ -18,7 +18,7 @@ public class Logica implements Observer {
 	private int xJ, yJ;
 	private int xO, yO;
 
-	private boolean jugar, check, winner, empate;
+	private boolean jugar, check, winner, empate, enviarGanador;
 
 	public Logica(PApplet app) {
 		this.app = app;
@@ -103,43 +103,6 @@ public class Logica implements Observer {
 					app.line(x - 50, y - 50, x + 50, y + 50);
 					app.line(x + 50, y - 50, x - 50, y + 50);
 				}
-
-				// ========HACER 3 EN RAYA RAYA=============
-				// Horizontales
-
-				if (matriz[i][j] != 0 && i == 0) {
-					if (matriz[i][j] == matriz[i + 1][j]) {
-						if (matriz[i][j] == matriz[i + 2][j]) {
-							winner = true;
-						}
-					}
-				}
-
-				// Verticales
-
-				if (matriz[i][j] != 0 && j == 0) {
-					if (matriz[i][j] == matriz[i][j + 1]) {
-						if (matriz[i][j] == matriz[i][j + 2]) {
-							winner = true;
-						}
-					}
-				}
-
-				// Diagonales
-				if (matriz[i][j] != 0 && i == 2 && j == 0) {
-					if (matriz[i][j] == matriz[i - 1][j + 1]) {
-						if (matriz[i][j] == matriz[i - 2][j + 2]) {
-							winner = true;
-						}
-					}
-				}
-				if (matriz[i][j] != 0 && i == 0 && j == 0) {
-					if (matriz[i][j] == matriz[i + 1][j + 1]) {
-						if (matriz[i][j] == matriz[i + 2][j + 2]) {
-							winner = true;
-						}
-					}
-				}
 			}
 		}
 
@@ -222,6 +185,7 @@ public class Logica implements Observer {
 
 			if (((String) arg).contains("Gano")) {
 				winner = true;
+				enviarGanador = true;
 
 				if (id >= 3) {
 					String[] win = ((String) arg).split(":");
@@ -272,54 +236,62 @@ public class Logica implements Observer {
 			} else {
 				System.out.println("Jugada no válida");
 			}
+		}
 
-			if (winner) {
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+
+				// ========HACER 3 EN RAYA RAYA=============
+				// Horizontales
+
+				if (matriz[i][j] != 0 && i == 0) {
+					if (matriz[i][j] == matriz[i + 1][j]) {
+						if (matriz[i][j] == matriz[i + 2][j]) {
+							winner = true;
+						}
+					}
+				}
+
+				// Verticales
+
+				if (matriz[i][j] != 0 && j == 0) {
+					if (matriz[i][j] == matriz[i][j + 1]) {
+						if (matriz[i][j] == matriz[i][j + 2]) {
+							winner = true;
+						}
+					}
+				}
+
+				// Diagonales
+				if (matriz[i][j] != 0 && i == 2 && j == 0) {
+					if (matriz[i][j] == matriz[i - 1][j + 1]) {
+						if (matriz[i][j] == matriz[i - 2][j + 2]) {
+							winner = true;
+						}
+					}
+				}
+				if (matriz[i][j] != 0 && i == 0 && j == 0) {
+					if (matriz[i][j] == matriz[i + 1][j + 1]) {
+						if (matriz[i][j] == matriz[i + 2][j + 2]) {
+							winner = true;
+						}
+					}
+				}
+			}
+		}
+		
+		if (winner) {
+			if (!enviarGanador) {
 				MensajeID jugada = new MensajeID("Gano el jugador:" + id);
 				try {
 					c.enviar(c.serialize(jugada), c.getGroupAddress(), 5000);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
+
+				enviarGanador = true;
 			}
 		}
-	}
-
-	private void codigoProDeTiempo() {
-		// public class Cronometro {
-		// //Objeto para contabilizar tiempo y que no se vea afectado por un
-		// frame rate
-		// //Declaración de las variables que ejecutaran el tiempo
-		// int comenzar = 0, parar = 0;
-		// boolean reproducir = false;
-		// //Si el reloj comienza
-		// void empezar() {
-		// comenzar = millis();
-		// reproducir = true;
-		// }
-		// //Si el reloj se detiene
-		// void detener() {
-		// parar = millis();
-		// reproducir = false;
-		// }
-		// //Reproducira el tiempo que se este pasando
-		// int timepoReproducido() {
-		// int tiempo;
-		// if (reproducir) {
-		// tiempo = (millis() - comenzar);
-		// } else {
-		// tiempo = (parar - comenzar);
-		// }
-		// return tiempo;
-		// }
-		// //Retorna los segundos reproducidos
-		// int second() {
-		// return (timepoReproducido() / 1000) % 60;
-		// }
-		// //Retorna los minutos reproducidos
-		// int minute() {
-		// return (timepoReproducido() / (1000*60)) % 60;
-		// }
-		// }
 	}
 
 }
